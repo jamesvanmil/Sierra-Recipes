@@ -1,8 +1,14 @@
+require 'bundler/setup'
+require 'active_sierra_models'
+require 'clipboard'
+
 ## Looking up information about orders:
 
-os = #array of truncated order numbers
+# Copy your truncated order numbers into a comma delimited list on your clipboard
+os = (Clipboard.paste).split(",")
 
 order_objects = os.collect{ |o| OrderView.find_by_record_num(o) }
+
 output = order_objects.collect do |o|
      bib = o.bib_views.first
      ## Add other fields as needed
@@ -13,4 +19,5 @@ output = order_objects.collect do |o|
      status = o.order_status_code
      "#{title}\t#{payment}\t#{fund}\t#{format}\t#{status}"
 end
-IO.popen('pbcopy', 'w') { |f| f << output.join("\n") } ## this puts it in your clipboard
+
+Clipboard(output.join("\n"))
